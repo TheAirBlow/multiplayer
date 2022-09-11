@@ -8,7 +8,7 @@ public class Configuration
     {
         public class SecurityClass
         {
-            [JsonProperty("checksAmount")] public int ChecksAmount;
+            [JsonProperty("checksAmount")] public int ChecksAmount = 2;
             [JsonProperty("numbers")] public List<List<int>> Numbers = new() {
                 new List<int> { 26, 54, 24, 78 },
                 new List<int> { 79, 67, 53, 38 }

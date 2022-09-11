@@ -18,9 +18,9 @@ public class PeerSession : TcpSession
 
     protected override void OnDisconnected()
     {
-        switch (_sessionState)
-        {
+        switch (_sessionState) {
             case SessionState.HostingServer:
+                Program.ServerToInformation.Remove(serverId);
                 Program.ServerToStopwatch.Remove(serverId);
                 Program.ServerToSession.Remove(serverId);
                 Program.ServerToPeer.Remove(serverId);
@@ -33,6 +33,11 @@ public class PeerSession : TcpSession
                 }
                 break;
             case SessionState.ConnectedToServer:
+                if (!Program.ServerToSession.ContainsKey(serverId)) {
+                    Disconnect();
+                    break;
+                }
+
                 using (var memory = new MemoryStream())
                 using (var writer = new BinaryWriter(memory)) {
                     writer.Write((byte) 0x01); 
@@ -71,14 +76,19 @@ public class PeerSession : TcpSession
                 }
                 break;
             case SessionState.ConnectedToServer:
-                Program.ServerToSession[serverId].Send(buffer);
+                writer.Write(0x00);
+                writer.Write(Id.ToString());
+                writer.Write(buffer);
+                Program.ServerToSession[serverId].Send(memory2.ToArray());
                 break;
             case SessionState.Idle:
                 try {
                     switch (reader.ReadByte()) {
                         case 0x00: // Host a server
-                            var token = reader.ReadBytes(reader.ReadInt32());
+                            var token = Convert.ToHexString(reader.ReadBytes(16));
                             if (!Program.Tokens.ContainsValue(token)) {
+                                writer.Write(false); // Just why
+                                Send(memory2.ToArray());
                                 Disconnect();
                                 break;
                             }
@@ -91,7 +101,7 @@ public class PeerSession : TcpSession
                             break;
                         case 0x01: // Connect to a server
                             serverId = reader.ReadInt32();
-                            if (Program.PeerPool[Program.ServerToPeer[serverId]].Id != Id) {
+                            if (Program.PeerPool[Program.ServerToPeer[serverId]].Id != Server.Id) {
                                 writer.Write(false); // Wrong peer
                                 writer.Write((byte) 0x00);
                                 Send(memory2.ToArray());
@@ -127,6 +137,7 @@ public class PeerSession : TcpSession
                             writer.Write((byte) 0x01); 
                             writer.Write((byte) 0x00);
                             writer.Write(Id.ToString());
+                            writer.Write(data.Length);
                             writer.Write(data);
                             Program.ServerToSession[serverId].Send(memory2.ToArray());
                             break;

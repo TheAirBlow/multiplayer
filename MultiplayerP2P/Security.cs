@@ -43,7 +43,7 @@ public static class Security
         // Verify the answer
         for (var i = 0; i < questions.Count; i++) {
             var q = questions[i];
-            if (answerReader.ReadInt32() != q + num[i][0] - num[i][1] * num[i][2] / num[i][3] + num[i][4])
+            if (answerReader.ReadInt32() != q + num[i][0] * num[i][1] / num[i][2] - num[i][3])
                 return false;
         }
 
