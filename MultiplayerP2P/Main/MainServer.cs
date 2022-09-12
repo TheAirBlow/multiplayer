@@ -13,5 +13,5 @@ public class MainServer : TcpServer
         => new MainSession(this);
 
     protected override void OnError(SocketError error)
-        => Program.Logger.Error("Unknown error occured (notifier server): {0}", error);
+        => Program.Logger.Error("Socket error occured (main server): {0}", error);
 }

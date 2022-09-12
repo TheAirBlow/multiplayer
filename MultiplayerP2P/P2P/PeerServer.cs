@@ -14,5 +14,5 @@ public class PeerServer : TcpServer
         => new PeerSession(this);
 
     protected override void OnError(SocketError error)
-        => Program.Logger.Error("Unknown error occured (peer server): {0}", error);
+        => Program.Logger.Error("Socket error occured (peer server): {0}", error);
 }

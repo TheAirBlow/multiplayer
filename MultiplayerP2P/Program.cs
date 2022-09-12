@@ -16,11 +16,7 @@ public static class Program
 
     public static MainServer MainServer;
     public static List<PeerServer> PeerPool = new();
-    public static Dictionary<int, string> Tokens = new();
-    public static Dictionary<int, int> ServerToPeer = new();
-    public static Dictionary<int, byte[]> ServerToInformation = new();
-    public static Dictionary<int, Stopwatch> ServerToStopwatch = new();
-    public static Dictionary<int, PeerSession> ServerToSession = new();
+    public static Dictionary<int, Server> Servers = new();
 
     public static void Main(string[] args)
     {
@@ -48,25 +44,19 @@ public static class Program
     private static void WatchdogThread()
     {
         while (true) {
-            var valuesList = ServerToStopwatch.Values.ToList();
-            var keysList = ServerToStopwatch.Keys.ToList();
+            var valuesList = Servers.Values.ToList();
+            var keysList = Servers.Keys.ToList();
             for (var i = 0; i < valuesList.Count; i++) {
                 var value = valuesList[i];
+                if (value.Session != null) continue;
                 var key = keysList[i];
-                if (value.Elapsed.Seconds > 10) {
-                    ServerToStopwatch.Remove(key);
-                    if (!ServerToSession.ContainsKey(key)) {
-                        Logger.Information($"Removed ghost server (ID {key}) on peer {ServerToPeer[key]}");
-                        ServerToInformation.Remove(key);
-                        ServerToStopwatch.Remove(key);
-                        ServerToPeer.Remove(key);
-                        Tokens.Remove(key);
-
-                        using var memory = new MemoryStream();
-                        using var writer = new BinaryWriter(memory);
-                        writer.Write((byte) 0x00); writer.Write(key);
-                        MainServer.Multicast(memory.ToArray());
-                    }
+                if (value.Timer.Elapsed.Seconds > 10) {
+                    Servers.Remove(key);
+                    using var memory = new MemoryStream();
+                    using var writer = new BinaryWriter(memory);
+                    writer.Write((byte) 0x00); writer.Write(key);
+                    MainServer.Multicast(memory.ToArray());
+                    Logger.Information($"Removed ghost server (ID {key}) on peer {value.PeerId}");
                 }
             }
 
