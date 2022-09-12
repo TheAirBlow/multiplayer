@@ -27,7 +27,7 @@ public class Configuration
     public static void Load()
     {
         if (!File.Exists("config.json"))
-            File.WriteAllText("config.json", JsonConvert.SerializeObject(Data));
+            File.WriteAllText("config.json", JsonConvert.SerializeObject(Data, Formatting.Indented));
         
         try {
             var tmp = JsonConvert.DeserializeObject<DataClass>(File.ReadAllText("config.json"));

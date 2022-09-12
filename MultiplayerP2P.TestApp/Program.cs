@@ -40,7 +40,7 @@ switch (args[0]) {
         
         using (var memory2 = new MemoryStream())
         using (var writer = new BinaryWriter(memory2)) {
-            writer.Write((byte) 0x02);
+            writer.Write((byte) 0x01);
             writer.Write(0);
             mainClient.Send(memory2.ToArray());
         }

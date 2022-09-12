@@ -1,8 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
+using MultiplayerP2P.P2P;
 using NetCoreServer;
 
-namespace MultiplayerP2P.P2P;
+namespace MultiplayerP2P.Peer;
 
 public class PeerServer : TcpServer
 {

@@ -32,6 +32,7 @@ public class MainClient : TcpClient
         using var reader = new BinaryReader(memory1, Encoding.UTF8);
         using var memory2 = new MemoryStream();
         using var writer = new BinaryWriter(memory2, Encoding.UTF8);
+        if (reader.ReadByte() != 0x00) return;
         if (!verified && !verificationCheckPass) {
             var x = reader.ReadInt32();
             var y = reader.ReadInt32();

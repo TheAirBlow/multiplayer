@@ -29,6 +29,7 @@ public class MainClient : TcpClient
         using var reader = new BinaryReader(memory1, Encoding.UTF8);
         using var memory2 = new MemoryStream();
         using var writer = new BinaryWriter(memory2, Encoding.UTF8);
+        if (reader.ReadByte() != 0x00) return;
         if (reader.ReadBoolean()) {
             Port = reader.ReadInt32();
             AnsiConsole.MarkupLine($"[green]Peer port {Port}[/]");

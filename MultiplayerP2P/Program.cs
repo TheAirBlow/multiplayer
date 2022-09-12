@@ -2,6 +2,7 @@
 using System.Net;
 using MultiplayerP2P.Main;
 using MultiplayerP2P.P2P;
+using MultiplayerP2P.Peer;
 using Serilog;
 using Serilog.Core;
 
